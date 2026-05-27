@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f4f6f9;
+  color: #2b313c;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #d2d8e2;
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: #b3bccb; background-clip: content-box; }
+
+/* ── Canvas grid background ────────────────────────────── */
+.grid-bg {
+  background-color: #fbfcfe;
+  background-image:
+    linear-gradient(rgba(23, 100, 123, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 100, 123, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(23, 100, 123, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 100, 123, 0.025) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+}
+
+/* ── Tile / select group buttons ──────────────────────── */
+.tile-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 54px;
+  border: 1px solid #e4e8ef;
+  border-radius: 9px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.14s ease;
+  padding: 4px;
+}
+.tile-btn:hover {
+  border-color: #73d6e3;
+  background: #f4fdfe;
+}
+.tile-btn.active {
+  border-color: #179bb3;
+  background: #eefcfd;
+  box-shadow: 0 0 0 1px #179bb3 inset;
+}
+.tile-label {
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 500;
+  color: #6b7588;
+  text-align: center;
+}
+.tile-btn.active .tile-label { color: #157d97; }
+
+/* ── Inputs ────────────────────────────────────────────── */
+.param-input {
+  width: 100%;
+  border: 1px solid #dde2ea;
+  border-radius: 7px;
+  padding: 6px 9px;
+  font-size: 12.5px;
+  color: #2b313c;
+  background: #fff;
+  outline: none;
+  transition: all 0.14s;
+}
+.param-input:focus {
+  border-color: #179bb3;
+  box-shadow: 0 0 0 3px rgba(23, 155, 179, 0.12);
+}
+.param-input[readonly] {
+  background: #f7f8fa;
+  color: #6b7588;
+  cursor: default;
+}
+select.param-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7588' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  padding-right: 26px;
+}
+
+.input-num { font-variant-numeric: tabular-nums; }
+
+/* ── Tables ────────────────────────────────────────────── */
+.model-table {
+  width: 100%;
+  font-size: 11.5px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.model-table th {
+  background: #f7f8fa;
+  padding: 6px 9px;
+  text-align: left;
+  font-weight: 600;
+  color: #6b7588;
+  border-bottom: 1px solid #e4e8ef;
+  white-space: nowrap;
+}
+.model-table td {
+  padding: 6px 9px;
+  border-bottom: 1px solid #f0f2f6;
+  color: #3f4756;
+}
+.model-table tbody tr:last-child td { border-bottom: none; }
+.model-table tr:hover td { background: #f9fafc; }
+
+/* ── Misc ──────────────────────────────────────────────── */
+.diagram-svg { width: 100%; overflow: visible; }
+
+.tab-pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 7px;
+  transition: all 0.14s;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 30px; height: 30px;
+  border: 3px solid #d3f6f9;
+  border-top-color: #179bb3;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.fade-in { animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
