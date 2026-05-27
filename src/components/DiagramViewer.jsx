@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const DIAGRAM_HEIGHT = 160;
 const DIAGRAM_MARGIN = { top: 24, right: 20, bottom: 32, left: 60 };
 
-function DiagramSVG({ data, xCoords, color, label, unit, yLabel, fillBelow = false }) {
+function DiagramSVG({ data, xCoords, color, label, unit, yLabel, showFill = true, precision = 2 }) {
   if (!data || data.length === 0) return null;
 
   const W = 700;
@@ -53,11 +53,7 @@ function DiagramSVG({ data, xCoords, color, label, unit, yLabel, fillBelow = fal
   const maxIdx = data.indexOf(Math.max(...data));
   const minIdx = data.indexOf(Math.min(...data));
 
-  const formatVal = v => {
-    if (Math.abs(v) >= 100) return v.toFixed(1);
-    if (Math.abs(v) >= 10) return v.toFixed(2);
-    return v.toFixed(3);
-  };
+  const formatVal = v => v.toFixed(precision);
 
   return (
     <div className="w-full">
@@ -90,7 +86,7 @@ function DiagramSVG({ data, xCoords, color, label, unit, yLabel, fillBelow = fal
         <line x1={left} y1={zeroY} x2={left + plotW} y2={zeroY} stroke="#9ca3af" strokeWidth="1.2"/>
 
         {/* Fill */}
-        <path d={fillPath} fill={color} opacity="0.15"/>
+        {showFill && <path d={fillPath} fill={color} opacity="0.15"/>}
 
         {/* Diagram line */}
         <polyline
@@ -184,7 +180,7 @@ const CASE_LABELS = {
   COMBO2: 'Combo 2 · 1.2 DL + 1.6 LL',
 };
 
-export default function DiagramViewer({ results, activeDiagram, setActiveDiagram }) {
+export default function DiagramViewer({ results, activeDiagram, setActiveDiagram, precision = 2, diagramFill = true }) {
   const [activeCase, setActiveCase] = useState('DL');
 
   if (!results) return null;
@@ -244,7 +240,7 @@ export default function DiagramViewer({ results, activeDiagram, setActiveDiagram
         {activeDiagram === 'all' ? (
           diagrams.map(d => (
             <div key={d.id} className="bg-white border border-ink-200 rounded-xl overflow-hidden shadow-panel pt-3 pb-2">
-              <DiagramSVG data={d.data} xCoords={xCoords} color={d.color} label={d.label} unit={d.unit} />
+              <DiagramSVG data={d.data} xCoords={xCoords} color={d.color} label={d.label} unit={d.unit} precision={precision} showFill={diagramFill} />
             </div>
           ))
         ) : (
@@ -252,7 +248,7 @@ export default function DiagramViewer({ results, activeDiagram, setActiveDiagram
             const d = diagrams.find(x => x.id === activeDiagram) || diagrams[0];
             return (
               <div className="bg-white border border-ink-200 rounded-xl overflow-hidden shadow-panel pt-3 pb-2">
-                <DiagramSVG data={d.data} xCoords={xCoords} color={d.color} label={d.label} unit={d.unit} />
+                <DiagramSVG data={d.data} xCoords={xCoords} color={d.color} label={d.label} unit={d.unit} precision={precision} showFill={diagramFill} />
               </div>
             );
           })()
@@ -284,8 +280,8 @@ export default function DiagramViewer({ results, activeDiagram, setActiveDiagram
                   return (
                     <tr key={d.id}>
                       <td className="font-medium" style={{ color: d.color }}>{d.id === 'shear' ? 'Shear (kN)' : d.id === 'moment' ? 'Moment (kN·m)' : 'Deflection (mm)'}</td>
-                      <td>{maxVal.toFixed(3)}</td>
-                      <td>{minVal.toFixed(3)}</td>
+                      <td>{maxVal.toFixed(precision)}</td>
+                      <td>{minVal.toFixed(precision)}</td>
                       <td>{xCoords[Math.abs(maxVal) > Math.abs(minVal) ? maxIdx : minIdx]?.toFixed(2)}m</td>
                     </tr>
                   );

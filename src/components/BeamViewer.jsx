@@ -17,7 +17,7 @@ const SUP_STROKE  = '#515a6b';
 
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
-export default function BeamViewer({ model, results, activeLoadCase = 'DL' }) {
+export default function BeamViewer({ model, results, activeLoadCase = 'DL', showGrid = true }) {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
   const [viewBox, setViewBox] = useState({ x: -40, y: 0, w: 760, h: 360 });
@@ -118,7 +118,7 @@ export default function BeamViewer({ model, results, activeLoadCase = 'DL' }) {
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 grid-bg overflow-hidden relative">
+      <div className={`flex-1 overflow-hidden relative ${showGrid ? 'grid-bg' : 'bg-white'}`}>
         <svg
           ref={svgRef}
           width="100%" height="100%"

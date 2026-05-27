@@ -38,6 +38,12 @@ export default function App() {
   const [activeLoadCase, setActiveLoadCase] = useState('DL');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState(null);
+  const [prefs, setPrefs] = useState({
+    designCode: 'ACI 318M-14',
+    precision: 2,
+    showGrid: true,
+    diagramFill: true,
+  });
 
   const handleGenerate = useCallback(() => {
     setPhase('model');
@@ -96,6 +102,9 @@ export default function App() {
           setModel={setModel}
           phase={phase}
           results={results}
+          activeTopTab={activeTopTab}
+          prefs={prefs}
+          setPrefs={setPrefs}
         />
 
         {/* Content area */}
@@ -177,6 +186,7 @@ export default function App() {
                 model={model}
                 results={results}
                 activeLoadCase={activeLoadCase}
+                showGrid={prefs.showGrid}
               />
             )}
             {showDiagrams && (
@@ -184,6 +194,8 @@ export default function App() {
                 results={results}
                 activeDiagram={activeDiagram}
                 setActiveDiagram={setActiveDiagram}
+                precision={prefs.precision}
+                diagramFill={prefs.diagramFill}
               />
             )}
           </div>

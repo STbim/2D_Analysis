@@ -221,8 +221,13 @@ function FieldSelect({ label, value, onChange, options }) {
 
 // ─── Main Sidebar ─────────────────────────────────────────────────────────────
 
-export default function Sidebar({ model, setModel, phase, results }) {
+export default function Sidebar({ model, setModel, phase, results, activeTopTab = 'Project', prefs, setPrefs }) {
   const [activeLoadTab, setActiveLoadTab] = useState('DL');
+
+  // ── Preferences view ──
+  if (activeTopTab === 'Preferences' && prefs && setPrefs) {
+    return <PreferencesPanel prefs={prefs} setPrefs={setPrefs} model={model} update={(k, v) => setModel(p => ({ ...p, [k]: v }))} />;
+  }
 
   const update = (path, value) => {
     setModel(prev => {
@@ -486,6 +491,69 @@ function ModelTable({ title, children, actions }) {
         </div>
       )}
     </div>
+  );
+}
+
+// ─── Preferences Panel ────────────────────────────────────────────────────────
+
+function Toggle({ label, value, onChange, hint }) {
+  return (
+    <div className="flex items-center justify-between gap-2 mb-3">
+      <div className="flex flex-col">
+        <span className="text-[12px] text-ink-700 font-medium">{label}</span>
+        {hint && <span className="text-[10.5px] text-ink-400">{hint}</span>}
+      </div>
+      <button
+        onClick={() => onChange(!value)}
+        className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${value ? 'bg-brand-500' : 'bg-ink-300'}`}
+      >
+        <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${value ? 'translate-x-4' : ''}`} />
+      </button>
+    </div>
+  );
+}
+
+function PreferencesPanel({ prefs, setPrefs, model, update }) {
+  const set = (k, v) => setPrefs(p => ({ ...p, [k]: v }));
+  return (
+    <aside className="w-[260px] min-w-[260px] bg-white border-r border-ink-200 overflow-y-auto flex flex-col shrink-0">
+      <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-ink-100 bg-ink-50/40">
+        <span className="text-[11px] font-semibold text-ink-500 uppercase tracking-wider">Preferences</span>
+      </div>
+
+      <Panel title="Units & Code" defaultOpen={true}>
+        <FieldSelect label="Unit System" value={model.units} onChange={e => update('units', e.target.value)} options={['SI', 'Metric']} />
+        <FieldSelect label="Design Code" value={prefs.designCode}
+          onChange={e => set('designCode', e.target.value)}
+          options={['ACI 318M-14', 'ACI 318-19', 'Eurocode 2', 'BS 8110', 'AISC 360']} />
+      </Panel>
+
+      <Panel title="Display" defaultOpen={true}>
+        <div className="mb-3">
+          <label className="text-[11.5px] text-ink-500 block mb-1">Decimal Precision</label>
+          <select value={prefs.precision} onChange={e => set('precision', parseInt(e.target.value))} className="param-input">
+            {[0, 1, 2, 3, 4].map(n => <option key={n} value={n}>{n} decimal{n === 1 ? '' : 's'}</option>)}
+          </select>
+        </div>
+        <Toggle label="Canvas grid" hint="Show grid in model view" value={prefs.showGrid} onChange={v => set('showGrid', v)} />
+        <Toggle label="Diagram fill" hint="Shade area under SFD/BMD" value={prefs.diagramFill} onChange={v => set('diagramFill', v)} />
+      </Panel>
+
+      <Panel title="About" defaultOpen={true}>
+        <div className="text-[11.5px] text-ink-500 space-y-1.5">
+          <div className="flex justify-between"><span>Application</span><span className="text-ink-700 font-medium">Beam 2D</span></div>
+          <div className="flex justify-between"><span>Version</span><span className="text-ink-700 font-medium">1.0.0</span></div>
+          <div className="flex justify-between"><span>Solver</span><span className="text-ink-700 font-medium">Euler–Bernoulli FEM</span></div>
+          <div className="flex justify-between"><span>Elements/span</span><span className="text-ink-700 font-medium">100</span></div>
+        </div>
+        <p className="text-[10.5px] text-ink-400 mt-2.5 leading-relaxed">
+          Direct stiffness method with analytical reaction recovery. Verified against
+          closed-form solutions for simply-supported, cantilever and continuous beams.
+        </p>
+      </Panel>
+
+      <div className="h-4 shrink-0" />
+    </aside>
   );
 }
 

@@ -383,27 +383,24 @@ export function solveBeam(model) {
 
       let V = 0, Mbm = 0;
 
-      // Upward reactions at nodes <= x
+      // Reactions to the LEFT of the section (left-limit rule).
+      // At an interior/end node we take the section *just left* of the node, so a
+      // reaction located exactly at this node (k === i) is excluded — this captures
+      // the true peak of V/M just inside a support (e.g. fixed end of a right
+      // cantilever, or the interior support of a continuous beam). The very first
+      // node (i === 0) is the right-limit, so its own support (k === 0) is included.
       for (const [dStr, R] of Object.entries(rxns)) {
         const d = parseInt(dStr);
-        if (d % 2 === 0) { // vertical DOF
-          const nodeIdx = d / 2;
-          const xR = nodeIdx * eL;
-          if (xR <= x) {
-            V   += R;
-            Mbm += R * (x - xR); // upward force creates sagging moment (+)
-          }
-        }
-        if (d % 2 === 1) { // moment DOF (fixed support reaction moment)
-          const nodeIdx = (d-1) / 2;
-          const xR = nodeIdx * eL;
-          if (xR <= x) {
-            // R is the fixed-end moment reaction (N·mm).
-            // For left cantilever: R is stored as +totalM (CCW reaction).
-            // A CCW reaction moment at the left end creates HOGGING (negative sagging) bending.
-            // So subtract it from Mbm (sagging positive convention).
-            Mbm -= R;
-          }
+        const k = (d % 2 === 0) ? d / 2 : (d - 1) / 2; // node index of this reaction
+        const includeR = (k < i) || (i === 0 && k === 0);
+        if (!includeR) continue;
+        const xR = k * eL;
+        if (d % 2 === 0) { // vertical reaction (upward +)
+          V   += R;
+          Mbm += R * (x - xR); // upward force creates sagging (+) moment
+        } else {           // fixed-support moment reaction (N·mm)
+          // CCW reaction moment at a fixed end creates hogging (negative sagging).
+          Mbm -= R;
         }
       }
 
